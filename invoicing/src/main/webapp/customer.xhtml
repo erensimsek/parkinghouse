@@ -1,0 +1,274 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<f:view>
+    <h:head>
+        <title>Eren Simsek's Parking House Demo App | Customers</title>
+    </h:head>
+    <h:body>
+        <h1>Parking Office Online Invioce System</h1>
+        <h:form id="form">
+
+        <p:menubar>
+            <p:submenu label="Parking Houses" icon="ui-icon-home">
+                <p:menuitem value="Manage Parking Houses" url="/parkingHouse.jsf" icon="ui-icon-flag"/>
+            </p:submenu>
+
+            <p:submenu label="Parkings" icon="ui-icon-clock">
+                <p:menuitem value="Manage Parking" url="/parking.jsf" icon="ui-icon-transferthick-e-w"/>
+            </p:submenu>
+
+            <p:submenu label="Customers" icon="ui-icon-person">
+                <p:menuitem value="Manage Customers" url="customer.jsf" icon="ui-icon-cart"/>
+            </p:submenu>
+
+
+            <f:facet name="options">
+                <p:inputText style="margin-right:10px" placeholder="Search"/>
+                <p:commandButton type="button" value="Logout" icon="ui-icon-extlink"/>
+            </f:facet>
+        </p:menubar>
+        <h2>Customers</h2>
+            <p:messages id="messages"/>
+            <p:panelGrid id="newCustomer" columns="2">
+                <p:outputLabel for="txt_name" value="Name"/>
+                <p:inputText id="txt_name" value="#{customerManagedBean.customer.name}"/>
+                <p:outputLabel for="txt_lastname" value="Last name"/>
+                <p:inputText id="txt_lastname" value="#{customerManagedBean.customer.lastName}"/>
+                <p:outputLabel for="txt_email" value="E-mail"/>
+                <p:inputText id="txt_email" value="#{customerManagedBean.customer.email}"/>
+                <p:outputLabel for="onemenu_customer_type" value="Customer Type"/>
+                <p:selectOneMenu value="#{customerManagedBean.customer.customerType}" id="onemenu_customer_type">
+                    <f:selectItem itemLabel="Please select" itemValue=""/>
+                    <f:selectItems value="#{customerManagedBean.customerTypeList}" var="var" itemValue="#{var}"
+                                   itemLabel="#{var}"/>
+                </p:selectOneMenu>
+
+                <p:commandButton id="btn_save" value="Save" action="#{customerManagedBean.saveCustomer}"
+                                 process=":form:newCustomer"
+                                 update=":form:newCustomer :form:customerList :form:messages">
+                </p:commandButton>
+            </p:panelGrid>
+            <p:dataTable id="customerList" value="#{customerManagedBean.customerList}" var="c"
+                         rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15">
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Id"/>
+                    </f:facet>
+                    <h:outputText value="#{c.id}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Name"/>
+                    </f:facet>
+                    <h:outputText value="#{c.name}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Last name"/>
+                    </f:facet>
+                    <h:outputText value="#{c.lastName}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="E-mail"/>
+                    </f:facet>
+                    <h:outputText value="#{c.email}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Type"/>
+                    </f:facet>
+                    <h:outputText value="#{c.customerType}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Edit"/>
+                    </f:facet>
+                    <p:commandButton value="Edit" process="@this" update=":form:newCustomer">
+                        <f:setPropertyActionListener value="#{c}" target="#{customerManagedBean.customer}"/>
+                    </p:commandButton>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Invoice Detail"/>
+                    </f:facet>
+                    <p:commandButton value="Invoice Detail" process="@this" oncomplete="PF('dlg2').show();" update=":form:newCustomer :form:customerList :form:messages :form:dlg2"
+                                     action="#{customerManagedBean.findByInvoiceCustomerId(c)}">
+                    </p:commandButton>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Invoice Request"/>
+                    </f:facet>
+                    <p:commandButton value="Get Invoice" process="@this" update=":form:newCustomer :form:customerList :form:messages :form:dlg2"
+                                     action="#{customerManagedBean.generateInvoiceForCustomer(c)}">
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <p:dialog header="Customer Invoice and Details" id="dlg2" widgetVar="dlg2" modal="true" dynamic="true">
+                <h3>Previous Months Usage</h3>
+                <p:dataTable id="customerInvoiceList" value="#{customerManagedBean.invoiceList}" var="i">
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Id"/>
+                        </f:facet>
+                        <h:outputText value="#{i.id}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Customer"/>
+                        </f:facet>
+                        <h:outputText value="#{i.customer.name} #{i.customer.lastName}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Month / Year"/>
+                        </f:facet>
+                        <h:outputText value="#{i.monthAndYear}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Monthly Fee"/>
+                        </f:facet>
+                        <h:outputText value="#{i.montlyFee}  €"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Total Usage Half Hours"/>
+                        </f:facet>
+                        <h:outputText value="#{i.totalUsageHalfHours}"/>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Total Parking Fee"/>
+                        </f:facet>
+                        <h:outputText value="#{i.totalParkingFee}  €"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Total Invoice"/>
+                        </f:facet>
+                        <h:outputText value="#{i.totalInvoice}  €"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Invoice Detail"/>
+                        </f:facet>
+                        <p:commandButton value="Invoice Detail" process="@this" oncomplete="PF('dlg3').show();" update=":form:newCustomer :form:customerList :form:messages :form:dlg3"
+                                         action="#{customerManagedBean.findByInvoiceDetailsByInvoice(i)}">
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+
+                <br/><br/><br/><br/><br/><br/>
+
+
+                <h3>Current Month Usage</h3>
+                <p:dataTable id="customerInvoiceDeatilList" value="#{customerManagedBean.invoiceDetailList}" var="i">
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Id"/>
+                        </f:facet>
+                        <h:outputText value="#{i.id}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Customer"/>
+                        </f:facet>
+                        <h:outputText value="#{i.parking.customer.name} #{i.parking.customer.lastName}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Parking Start"/>
+                        </f:facet>
+                        <h:outputText value="#{i.parking.parkingStartDate}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Parking End"/>
+                        </f:facet>
+                        <h:outputText value="#{i.parking.parkingEndDate}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Half Hours(7am - 7pm)"/>
+                        </f:facet>
+                        <h:outputText value="#{i.parking.halfHourCountAm}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Half Hours(7pm - 7am)"/>
+                        </f:facet>
+                        <h:outputText value="#{i.parking.halfHourCountPm}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Parking Fee"/>
+                        </f:facet>
+                        <h:outputText value="#{i.parkingFee} €"/>
+                    </p:column>
+                </p:dataTable>
+                <p:outputLabel for="txt_monthlyfee" value="Monthly Fee : "/><h:outputText id="txt_monthlyfee" value="#{customerManagedBean.montlyFeeTemp} €"/>
+                <p:spacer width="20" height="30"/>
+                <p:outputLabel for="txt_totalfee" value="Total Fee : "/><h:outputText id="txt_totalfee" value="#{customerManagedBean.totalFeeTemp} €"/>
+            </p:dialog>
+
+            <p:dialog header="Customer Invoice and Details" id="dlg3" widgetVar="dlg3" modal="true" dynamic="true" closeOnEscape="true">
+            <h3>Previous Months Usage Details</h3>
+            <p:dataTable id="InvoiceDetailListofInvoice" value="#{customerManagedBean.preInvoiceDetailList}" var="i">
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Id"/>
+                    </f:facet>
+                    <h:outputText value="#{i.id}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Customer"/>
+                    </f:facet>
+                    <h:outputText value="#{i.parking.customer.name} #{i.parking.customer.lastName}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Parking Start"/>
+                    </f:facet>
+                    <h:outputText value="#{i.parking.parkingStartDate}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Parking End"/>
+                    </f:facet>
+                    <h:outputText value="#{i.parking.parkingEndDate}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Half Hours(7am - 7pm)"/>
+                    </f:facet>
+                    <h:outputText value="#{i.parking.halfHourCountAm}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Half Hours(7pm - 7am)"/>
+                    </f:facet>
+                    <h:outputText value="#{i.parking.halfHourCountPm}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Parking Fee"/>
+                    </f:facet>
+                    <h:outputText value="#{i.parkingFee} €"/>
+                </p:column>
+            </p:dataTable>
+            </p:dialog>
+        </h:form>
+    </h:body>
+</f:view>
+</html>

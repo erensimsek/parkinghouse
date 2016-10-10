@@ -1,0 +1,130 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<f:view>
+    <h:head>
+        <title>Eren Simsek's Parking House Demo App | Parkings</title>
+    </h:head>
+    <h:body>
+        <h1>Parking Office Online Invioce System</h1>
+        <h:form id="form">
+
+            <p:menubar>
+                <p:submenu label="Parking Houses" icon="ui-icon-home">
+                    <p:menuitem value="Manage Parking Houses" url="/parkingHouse.jsf" icon="ui-icon-flag"/>
+                </p:submenu>
+
+                <p:submenu label="Parkings" icon="ui-icon-clock">
+                    <p:menuitem value="Manage Parking" url="/parking.jsf" icon="ui-icon-transferthick-e-w"/>
+                </p:submenu>
+
+                <p:submenu label="Customers" icon="ui-icon-person">
+                    <p:menuitem value="Manage Customers" url="customer.jsf" icon="ui-icon-cart"/>
+                </p:submenu>
+
+
+                <f:facet name="options">
+                    <p:inputText style="margin-right:10px" placeholder="Search"/>
+                    <p:commandButton type="button" value="Logout" icon="ui-icon-extlink"/>
+                </f:facet>
+            </p:menubar>
+
+            <h2>Parkings</h2>
+
+            <p:messages id="messages"/>
+            <p:panelGrid id="newParking" columns="2">
+                <p:outputLabel for="start_time" value="Parking Start Time"/>
+                <p:calendar id="start_time" value="#{parkingManagedBean.parking.parkingStartDate}"
+                            pattern="MM/dd/yyyy HH:mm"/>
+
+                <p:outputLabel for="end_time" value="Parking End Time"/>
+                <p:calendar id="end_time" value="#{parkingManagedBean.parking.parkingEndDate}"
+                            pattern="MM/dd/yyyy HH:mm"/>
+
+                <p:outputLabel for="onemenu_parking_customer" value="Customer"/>
+                <p:selectOneMenu value="#{parkingManagedBean.parking.customer}" id="onemenu_parking_customer">
+                    <f:selectItem itemLabel="Please select" itemValue=""/>
+                    <f:selectItems value="#{parkingManagedBean.customerList}" var="var" itemValue="#{var}"
+                                   itemLabel="#{var.name} #{var.lastName}"/>
+                    <f:converter converterId="customerConverter"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel for="label_parking_house" value="Parking House"/>
+                <p:selectOneMenu value="#{parkingManagedBean.parking.parkingHouse}" id="label_parking_house">
+                    <f:selectItem itemLabel="Please select" itemValue=""/>
+                    <f:selectItems value="#{parkingManagedBean.parkingHouseList}" var="var" itemValue="#{var}"
+                                   itemLabel="#{var.name}"/>
+                    <f:converter converterId="parkingHouseConverter"/>
+                </p:selectOneMenu>
+
+                <p:commandButton id="btn_save" value="Save" action="#{parkingManagedBean.saveParking}"
+                                 process=":form:newParking"
+                                 update=":form:newParking :form:parkingList :form:messages">
+                </p:commandButton>
+            </p:panelGrid>
+            <p:dataTable id="parkingList" value="#{parkingManagedBean.parkingList}" var="p"
+                         rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15"
+                    >
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Id"/>
+                    </f:facet>
+                    <h:outputText value="#{p.id}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Customer"/>
+                    </f:facet>
+                    <h:outputText value="#{p.customer.name} #{p.customer.lastName}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Customer Type"/>
+                    </f:facet>
+                    <h:outputText value="#{p.customer.customerType}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Start Time"/>
+                    </f:facet>
+                    <h:outputText value="#{p.parkingStartDate}">
+                    </h:outputText>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="End Time"/>
+                    </f:facet>
+                    <h:outputText value="#{p.parkingEndDate}">
+                    </h:outputText>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Half Hours(7am - 7pm)"/>
+                    </f:facet>
+                    <h:outputText value="#{p.halfHourCountAm}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Half Hours(7pm - 7am)"/>
+                    </f:facet>
+                    <h:outputText value="#{p.halfHourCountPm}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Edit"/>
+                    </f:facet>
+                    <p:commandButton value="Finish Parking" process="@this" update=":form:newParking"
+                                     disabled="#{p.parkingEndDate ne null}">
+                        <f:setPropertyActionListener value="#{p}" target="#{parkingManagedBean.parking}"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</f:view>
+</html>

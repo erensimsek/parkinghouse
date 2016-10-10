@@ -1,0 +1,25 @@
+<faces-config version="2.2"
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+              http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+
+    <application>
+        <el-resolver>org.springframework.web.jsf.el.SpringBeanFacesELResolver</el-resolver>
+    </application>
+
+    <lifecycle>
+        <phase-listener>org.springframework.web.jsf.DelegatingPhaseListenerMulticaster</phase-listener>
+    </lifecycle>
+    <converter>
+        <converter-id>customerConverter</converter-id>
+        <converter-for-class>com.eren.parkinghouse.domain.Customer</converter-for-class>
+        <converter-class>com.eren.parkinghouse.view.converter.CustomerConverter</converter-class>
+    </converter>
+    <converter>
+        <converter-id>parkingHouseConverter</converter-id>
+        <converter-for-class>com.eren.parkinghouse.domain.ParkingHouse</converter-for-class>
+        <converter-class>com.eren.parkinghouse.view.converter.ParkingHouseConverter</converter-class>
+    </converter>
+
+</faces-config>
